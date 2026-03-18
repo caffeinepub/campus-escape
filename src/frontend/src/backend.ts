@@ -89,45 +89,189 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface Score {
-    levelReached: bigint;
-    escapeTime: bigint;
-    playerName: string;
+export interface Order {
+    id: bigint;
+    customerName: string;
+    status: string;
+    customerPhone: string;
+    customerAddress: string;
+    totalAmount: bigint;
+    items: Array<OrderItem>;
+}
+export interface Product {
+    id: bigint;
+    inStock: boolean;
+    name: string;
+    description: string;
+    imageUrl: string;
+    category: string;
+    priceCents: bigint;
+}
+export interface OrderItem {
+    productId: bigint;
+    quantity: bigint;
 }
 export interface backendInterface {
-    getLeaderboard(): Promise<Array<Score>>;
-    submitScore(playerName: string, escapeTime: bigint, levelReached: bigint): Promise<void>;
+    addProduct(name: string, description: string, priceCents: bigint, imageUrl: string, category: string, inStock: boolean): Promise<bigint>;
+    deleteProduct(id: bigint): Promise<void>;
+    deploy(): Promise<void>;
+    getOrder(id: bigint): Promise<Order | null>;
+    getOrders(): Promise<Array<Order>>;
+    getProduct(id: bigint): Promise<Product | null>;
+    getProducts(): Promise<Array<Product>>;
+    placeOrder(customerName: string, customerPhone: string, customerAddress: string, items: Array<OrderItem>, totalAmount: bigint): Promise<bigint>;
+    updateOrderStatus(orderId: bigint, newStatus: string): Promise<void>;
+    updateProduct(id: bigint, name: string, description: string, priceCents: bigint, imageUrl: string, category: string, inStock: boolean): Promise<void>;
 }
+import type { Order as _Order, Product as _Product } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
-    async getLeaderboard(): Promise<Array<Score>> {
+    async addProduct(arg0: string, arg1: string, arg2: bigint, arg3: string, arg4: string, arg5: boolean): Promise<bigint> {
         if (this.processError) {
             try {
-                const result = await this.actor.getLeaderboard();
+                const result = await this.actor.addProduct(arg0, arg1, arg2, arg3, arg4, arg5);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getLeaderboard();
+            const result = await this.actor.addProduct(arg0, arg1, arg2, arg3, arg4, arg5);
             return result;
         }
     }
-    async submitScore(arg0: string, arg1: bigint, arg2: bigint): Promise<void> {
+    async deleteProduct(arg0: bigint): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.submitScore(arg0, arg1, arg2);
+                const result = await this.actor.deleteProduct(arg0);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.submitScore(arg0, arg1, arg2);
+            const result = await this.actor.deleteProduct(arg0);
             return result;
         }
     }
+    async deploy(): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deploy();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deploy();
+            return result;
+        }
+    }
+    async getOrder(arg0: bigint): Promise<Order | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getOrder(arg0);
+                return from_candid_opt_n1(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getOrder(arg0);
+            return from_candid_opt_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getOrders(): Promise<Array<Order>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getOrders();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getOrders();
+            return result;
+        }
+    }
+    async getProduct(arg0: bigint): Promise<Product | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getProduct(arg0);
+                return from_candid_opt_n2(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getProduct(arg0);
+            return from_candid_opt_n2(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getProducts(): Promise<Array<Product>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getProducts();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getProducts();
+            return result;
+        }
+    }
+    async placeOrder(arg0: string, arg1: string, arg2: string, arg3: Array<OrderItem>, arg4: bigint): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.placeOrder(arg0, arg1, arg2, arg3, arg4);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.placeOrder(arg0, arg1, arg2, arg3, arg4);
+            return result;
+        }
+    }
+    async updateOrderStatus(arg0: bigint, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateOrderStatus(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateOrderStatus(arg0, arg1);
+            return result;
+        }
+    }
+    async updateProduct(arg0: bigint, arg1: string, arg2: string, arg3: bigint, arg4: string, arg5: string, arg6: boolean): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateProduct(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            return result;
+        }
+    }
+}
+function from_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Order]): Order | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Product]): Product | null {
+    return value.length === 0 ? null : value[0];
 }
 export interface CreateActorOptions {
     agent?: Agent;

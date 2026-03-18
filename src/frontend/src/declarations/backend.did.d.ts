@@ -10,14 +10,45 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface Score {
-  'levelReached' : bigint,
-  'escapeTime' : bigint,
-  'playerName' : string,
+export interface Order {
+  'id' : bigint,
+  'customerName' : string,
+  'status' : string,
+  'customerPhone' : string,
+  'customerAddress' : string,
+  'totalAmount' : bigint,
+  'items' : Array<OrderItem>,
+}
+export interface OrderItem { 'productId' : bigint, 'quantity' : bigint }
+export interface Product {
+  'id' : bigint,
+  'inStock' : boolean,
+  'name' : string,
+  'description' : string,
+  'imageUrl' : string,
+  'category' : string,
+  'priceCents' : bigint,
 }
 export interface _SERVICE {
-  'getLeaderboard' : ActorMethod<[], Array<Score>>,
-  'submitScore' : ActorMethod<[string, bigint, bigint], undefined>,
+  'addProduct' : ActorMethod<
+    [string, string, bigint, string, string, boolean],
+    bigint
+  >,
+  'deleteProduct' : ActorMethod<[bigint], undefined>,
+  'deploy' : ActorMethod<[], undefined>,
+  'getOrder' : ActorMethod<[bigint], [] | [Order]>,
+  'getOrders' : ActorMethod<[], Array<Order>>,
+  'getProduct' : ActorMethod<[bigint], [] | [Product]>,
+  'getProducts' : ActorMethod<[], Array<Product>>,
+  'placeOrder' : ActorMethod<
+    [string, string, string, Array<OrderItem>, bigint],
+    bigint
+  >,
+  'updateOrderStatus' : ActorMethod<[bigint, string], undefined>,
+  'updateProduct' : ActorMethod<
+    [bigint, string, string, bigint, string, string, boolean],
+    undefined
+  >,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

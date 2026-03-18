@@ -8,29 +8,100 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const Score = IDL.Record({
-  'levelReached' : IDL.Nat,
-  'escapeTime' : IDL.Nat,
-  'playerName' : IDL.Text,
+export const OrderItem = IDL.Record({
+  'productId' : IDL.Nat,
+  'quantity' : IDL.Nat,
+});
+export const Order = IDL.Record({
+  'id' : IDL.Nat,
+  'customerName' : IDL.Text,
+  'status' : IDL.Text,
+  'customerPhone' : IDL.Text,
+  'customerAddress' : IDL.Text,
+  'totalAmount' : IDL.Nat,
+  'items' : IDL.Vec(OrderItem),
+});
+export const Product = IDL.Record({
+  'id' : IDL.Nat,
+  'inStock' : IDL.Bool,
+  'name' : IDL.Text,
+  'description' : IDL.Text,
+  'imageUrl' : IDL.Text,
+  'category' : IDL.Text,
+  'priceCents' : IDL.Nat,
 });
 
 export const idlService = IDL.Service({
-  'getLeaderboard' : IDL.Func([], [IDL.Vec(Score)], ['query']),
-  'submitScore' : IDL.Func([IDL.Text, IDL.Nat, IDL.Nat], [], []),
+  'addProduct' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Nat, IDL.Text, IDL.Text, IDL.Bool],
+      [IDL.Nat],
+      [],
+    ),
+  'deleteProduct' : IDL.Func([IDL.Nat], [], []),
+  'deploy' : IDL.Func([], [], []),
+  'getOrder' : IDL.Func([IDL.Nat], [IDL.Opt(Order)], ['query']),
+  'getOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
+  'getProduct' : IDL.Func([IDL.Nat], [IDL.Opt(Product)], ['query']),
+  'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+  'placeOrder' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Vec(OrderItem), IDL.Nat],
+      [IDL.Nat],
+      [],
+    ),
+  'updateOrderStatus' : IDL.Func([IDL.Nat, IDL.Text], [], []),
+  'updateProduct' : IDL.Func(
+      [IDL.Nat, IDL.Text, IDL.Text, IDL.Nat, IDL.Text, IDL.Text, IDL.Bool],
+      [],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  const Score = IDL.Record({
-    'levelReached' : IDL.Nat,
-    'escapeTime' : IDL.Nat,
-    'playerName' : IDL.Text,
+  const OrderItem = IDL.Record({ 'productId' : IDL.Nat, 'quantity' : IDL.Nat });
+  const Order = IDL.Record({
+    'id' : IDL.Nat,
+    'customerName' : IDL.Text,
+    'status' : IDL.Text,
+    'customerPhone' : IDL.Text,
+    'customerAddress' : IDL.Text,
+    'totalAmount' : IDL.Nat,
+    'items' : IDL.Vec(OrderItem),
+  });
+  const Product = IDL.Record({
+    'id' : IDL.Nat,
+    'inStock' : IDL.Bool,
+    'name' : IDL.Text,
+    'description' : IDL.Text,
+    'imageUrl' : IDL.Text,
+    'category' : IDL.Text,
+    'priceCents' : IDL.Nat,
   });
   
   return IDL.Service({
-    'getLeaderboard' : IDL.Func([], [IDL.Vec(Score)], ['query']),
-    'submitScore' : IDL.Func([IDL.Text, IDL.Nat, IDL.Nat], [], []),
+    'addProduct' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Nat, IDL.Text, IDL.Text, IDL.Bool],
+        [IDL.Nat],
+        [],
+      ),
+    'deleteProduct' : IDL.Func([IDL.Nat], [], []),
+    'deploy' : IDL.Func([], [], []),
+    'getOrder' : IDL.Func([IDL.Nat], [IDL.Opt(Order)], ['query']),
+    'getOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
+    'getProduct' : IDL.Func([IDL.Nat], [IDL.Opt(Product)], ['query']),
+    'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+    'placeOrder' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Vec(OrderItem), IDL.Nat],
+        [IDL.Nat],
+        [],
+      ),
+    'updateOrderStatus' : IDL.Func([IDL.Nat, IDL.Text], [], []),
+    'updateProduct' : IDL.Func(
+        [IDL.Nat, IDL.Text, IDL.Text, IDL.Nat, IDL.Text, IDL.Text, IDL.Bool],
+        [],
+        [],
+      ),
   });
 };
 

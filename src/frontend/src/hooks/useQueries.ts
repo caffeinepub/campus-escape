@@ -1,37 +1,121 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Score } from "../backend.d";
+import type { OrderItem, Product } from "../backend.d";
 import { useActor } from "./useActor";
 
-export function useLeaderboard() {
+export function useProducts() {
   const { actor, isFetching } = useActor();
-  return useQuery<Score[]>({
-    queryKey: ["leaderboard"],
+  return useQuery<Product[]>({
+    queryKey: ["products"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getLeaderboard();
+      return actor.getProducts();
     },
     enabled: !!actor && !isFetching,
   });
 }
 
-export function useSubmitScore() {
+export function useOrders() {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["orders"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getOrders();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function usePlaceOrder() {
   const { actor } = useActor();
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      playerName,
-      escapeTime,
-      levelReached,
+      customerName,
+      customerPhone,
+      customerAddress,
+      items,
+      totalAmount,
     }: {
-      playerName: string;
-      escapeTime: bigint;
-      levelReached: bigint;
+      customerName: string;
+      customerPhone: string;
+      customerAddress: string;
+      items: OrderItem[];
+      totalAmount: bigint;
     }) => {
-      if (!actor) throw new Error("No actor");
-      return actor.submitScore(playerName, escapeTime, levelReached);
+      if (!actor) throw new Error("Actor not ready");
+      return actor.placeOrder(
+        customerName,
+        customerPhone,
+        customerAddress,
+        items,
+        totalAmount,
+      );
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+  });
+}
+
+export function useAddProduct() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (p: Omit<Product, "id">) => {
+      if (!actor) throw new Error("Actor not ready");
+      return actor.addProduct(
+        p.name,
+        p.description,
+        p.priceCents,
+        p.imageUrl,
+        p.category,
+        p.inStock,
+      );
     },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
+  });
+}
+
+export function useUpdateProduct() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (p: Product) => {
+      if (!actor) throw new Error("Actor not ready");
+      return actor.updateProduct(
+        p.id,
+        p.name,
+        p.description,
+        p.priceCents,
+        p.imageUrl,
+        p.category,
+        p.inStock,
+      );
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
+  });
+}
+
+export function useDeleteProduct() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: bigint) => {
+      if (!actor) throw new Error("Actor not ready");
+      return actor.deleteProduct(id);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["products"] }),
+  });
+}
+
+export function useUpdateOrderStatus() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      orderId,
+      status,
+    }: { orderId: bigint; status: string }) => {
+      if (!actor) throw new Error("Actor not ready");
+      return actor.updateOrderStatus(orderId, status);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["orders"] }),
   });
 }
